@@ -1,3 +1,6 @@
-# dependencies
-
+# Dependencies
 node_modules
+
+# Environment Variables
+env.d.ts
+.env*

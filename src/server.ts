@@ -1,3 +1,4 @@
+import "dotenv-safe/config";
 import Koa from "koa";
 import bodyParser from "koa-bodyparser";
 import { ApolloServer, gql } from "apollo-server-koa";
@@ -22,4 +23,6 @@ const apolloServer = new ApolloServer({ typeDefs, resolvers });
 
 apolloServer.applyMiddleware({ app, cors: false });
 
-app.listen({ port: 4000 }, () => console.log(`server is running on PORT:4000`));
+app.listen({ port: process.env.PORT }, () =>
+  console.log(`server is running on PORT:${process.env.PORT}`)
+);
