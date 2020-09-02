@@ -1,0 +1,29 @@
+{
+  "name": "int-server",
+  "version": "1.0.0",
+  "description": "Int project api server",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node ./src/server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YunhwanJung/int-server.git"
+  },
+  "author": "yunhwanjung",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YunhwanJung/int-server/issues"
+  },
+  "homepage": "https://github.com/YunhwanJung/int-server#readme",
+  "dependencies": {
+    "apollo-server-koa": "^2.17.0",
+    "graphql": "^15.3.0",
+    "koa": "^2.13.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.2"
+  }
+}
