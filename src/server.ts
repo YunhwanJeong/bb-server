@@ -7,7 +7,7 @@ import { createConnection } from "typeorm";
 (async () => {
   await createConnection({
     type: "mysql",
-    url: process.env.MYSQL_URL,
+    url: process.env.DATABASE_URL,
   });
 
   const app = new Koa();
