@@ -1,5 +1,6 @@
 import "dotenv-safe/config";
 import Koa from "koa";
+import logger from "koa-logger";
 import bodyParser from "koa-bodyparser";
 import { ApolloServer, gql } from "apollo-server-koa";
 import { createConnection } from "typeorm";
@@ -12,6 +13,7 @@ import { createConnection } from "typeorm";
 
   const app = new Koa();
 
+  app.use(logger());
   app.use(bodyParser());
 
   const typeDefs = gql`
