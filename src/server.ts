@@ -2,27 +2,34 @@ import "dotenv-safe/config";
 import Koa from "koa";
 import bodyParser from "koa-bodyparser";
 import { ApolloServer, gql } from "apollo-server-koa";
+import { createConnection } from "typeorm";
 
-const app = new Koa();
+(async () => {
+  await createConnection({
+    type: "mysql",
+    url: process.env.MYSQL_URL,
+  });
 
-app.use(bodyParser());
+  const app = new Koa();
 
-const typeDefs = gql`
-  type Query {
-    hello: String
-  }
-`;
+  app.use(bodyParser());
 
-const resolvers = {
-  Query: {
-    hello: () => "Hello world!",
-  },
-};
+  const typeDefs = gql`
+    type Query {
+      hello: String
+    }
+  `;
+  const resolvers = {
+    Query: {
+      hello: () => "Hello world!",
+    },
+  };
 
-const apolloServer = new ApolloServer({ typeDefs, resolvers });
+  const apolloServer = new ApolloServer({ typeDefs, resolvers });
 
-apolloServer.applyMiddleware({ app, cors: false });
+  apolloServer.applyMiddleware({ app, cors: false });
 
-app.listen({ port: process.env.PORT }, () =>
-  console.log(`server is running on PORT:${process.env.PORT}`)
-);
+  app.listen({ port: process.env.PORT }, () =>
+    console.log(`server is running on PORT:${process.env.PORT}`)
+  );
+})().catch((error) => console.log(error));
