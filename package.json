@@ -19,12 +19,15 @@
   "homepage": "https://github.com/YunhwanJung/int-server#readme",
   "dependencies": {
     "apollo-server-koa": "^2.17.0",
+    "class-validator": "^0.12.2",
     "dotenv-safe": "^8.2.0",
     "graphql": "^15.3.0",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
     "koa-logger": "^3.2.1",
     "mysql2": "^2.1.0",
+    "reflect-metadata": "^0.1.13",
+    "type-graphql": "^1.0.0",
     "typeorm": "^0.2.25"
   },
   "devDependencies": {

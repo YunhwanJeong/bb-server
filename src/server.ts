@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import "dotenv-safe/config";
 import Koa from "koa";
 import logger from "koa-logger";
