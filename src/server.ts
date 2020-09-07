@@ -3,32 +3,24 @@ import "dotenv-safe/config";
 import Koa from "koa";
 import logger from "koa-logger";
 import bodyParser from "koa-bodyparser";
-import { ApolloServer, gql } from "apollo-server-koa";
+import { ApolloServer } from "apollo-server-koa";
 import { createConnection } from "typeorm";
+import { buildSchema } from "type-graphql";
+import { UserResolver } from "./resolver/UserResolver";
 
 (async () => {
-  await createConnection({
-    type: "mysql",
-    url: process.env.DATABASE_URL,
-  });
+  await createConnection();
 
   const app = new Koa();
 
   app.use(logger());
   app.use(bodyParser());
 
-  const typeDefs = gql`
-    type Query {
-      hello: String
-    }
-  `;
-  const resolvers = {
-    Query: {
-      hello: () => "Hello world!",
-    },
-  };
-
-  const apolloServer = new ApolloServer({ typeDefs, resolvers });
+  const apolloServer = new ApolloServer({
+    schema: await buildSchema({
+      resolvers: [UserResolver],
+    }),
+  });
 
   apolloServer.applyMiddleware({ app, cors: false });
 
