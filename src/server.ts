@@ -20,6 +20,7 @@ import { UserResolver } from "./resolver/UserResolver";
     schema: await buildSchema({
       resolvers: [UserResolver],
     }),
+    context: ({ ctx }) => ({ ctx }),
   });
 
   apolloServer.applyMiddleware({ app, cors: false });
