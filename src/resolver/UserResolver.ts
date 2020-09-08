@@ -9,8 +9,12 @@ import {
 } from "type-graphql";
 import { User } from "../entity/User";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { Context } from "koa";
+import {
+  createAccessToken,
+  createRefreshToken,
+  setRefreshTokenIntoCookie,
+} from "../lib/token";
 
 @ObjectType()
 class LoginResponse {
@@ -60,29 +64,18 @@ export class UserResolver {
     if (!user) {
       throw new Error("가입되지 않은 이메일입니다.");
     }
-    const { id, username, email, password } = user;
 
-    const isPasswordCorrect = await bcrypt.compare(inputPassword, password);
+    const isPasswordCorrect = await bcrypt.compare(
+      inputPassword,
+      user.password
+    );
     if (!isPasswordCorrect) {
       throw new Error("잘못된 비밀번호입니다.");
     }
-    ctx.cookies.set(
-      "jid",
-      jwt.sign({ id, username, email }, process.env.REFRESH_TOKEN_SECRET!, {
-        expiresIn: "7d",
-      }),
-      {
-        httpOnly: true,
-      }
-    );
+    const refreshToken = createRefreshToken(user);
+    setRefreshTokenIntoCookie(ctx, refreshToken);
     return {
-      accessToken: jwt.sign(
-        { id, username, email },
-        process.env.ACCESS_TOKEN_SECRET!,
-        {
-          expiresIn: "15m",
-        }
-      ),
+      accessToken: createAccessToken(user),
     };
   }
 }
