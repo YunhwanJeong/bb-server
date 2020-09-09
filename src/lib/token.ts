@@ -2,14 +2,14 @@ import { User } from "../entity/User";
 import jwt from "jsonwebtoken";
 import { Context } from "koa";
 
-export const createAccessToken = ({ id, username, email }: User) => {
-  return jwt.sign({ id, username, email }, process.env.ACCESS_TOKEN_SECRET!, {
+export const createAccessToken = ({ id }: User) => {
+  return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET!, {
     expiresIn: "15m",
   });
 };
 
-export const createRefreshToken = ({ id, username, email }: User) => {
-  return jwt.sign({ id, username, email }, process.env.REFRESH_TOKEN_SECRET!, {
+export const createRefreshToken = ({ id }: User) => {
+  return jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET!, {
     expiresIn: "7d",
   });
 };
@@ -21,4 +21,8 @@ export const setRefreshTokenIntoCookie = (
   return ctx.cookies.set("jid", refreshToken, {
     httpOnly: true,
   });
+};
+
+export const verifyAccessToken = (accessToken: string) => {
+  return jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!);
 };

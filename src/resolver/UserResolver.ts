@@ -6,15 +6,18 @@ import {
   ObjectType,
   Field,
   Ctx,
+  UseMiddleware,
 } from "type-graphql";
 import { User } from "../entity/User";
 import bcrypt from "bcrypt";
-import { Context } from "koa";
+import { Context, ParameterizedContext } from "koa";
 import {
   createAccessToken,
   createRefreshToken,
   setRefreshTokenIntoCookie,
 } from "../lib/token";
+import { authorize } from "../middleware/auth";
+import { MyState } from "../types";
 
 @ObjectType()
 class LoginResponse {
@@ -52,12 +55,7 @@ export class UserResolver {
     @Arg("email") inputEmail: string,
     @Arg("password") inputPassword: string,
     @Ctx()
-    {
-      ctx,
-    }: {
-      ctx: Context;
-      payload?: { id: number; username: string; email: string };
-    }
+    ctx: Context
   ): Promise<LoginResponse> {
     const user = await User.findOne({ where: { email: inputEmail } });
 
@@ -77,5 +75,10 @@ export class UserResolver {
     return {
       accessToken: createAccessToken(user),
     };
+  }
+  @Query(() => User, { nullable: true })
+  @UseMiddleware(authorize)
+  async me(@Ctx() ctx: ParameterizedContext<MyState>) {
+    return await User.findOne(ctx.state.user!.id);
   }
 }

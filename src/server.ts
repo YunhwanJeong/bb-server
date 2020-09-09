@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import "dotenv-safe/config";
-import Koa from "koa";
+import Koa, { Context } from "koa";
 import logger from "koa-logger";
 import bodyParser from "koa-bodyparser";
 import { ApolloServer } from "apollo-server-koa";
@@ -20,7 +20,7 @@ import { UserResolver } from "./resolver/UserResolver";
     schema: await buildSchema({
       resolvers: [UserResolver],
     }),
-    context: ({ ctx }) => ({ ctx }),
+    context: ({ ctx }: { ctx: Context }) => ctx,
   });
 
   apolloServer.applyMiddleware({ app, cors: false });
