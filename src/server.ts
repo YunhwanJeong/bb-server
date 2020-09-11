@@ -3,10 +3,13 @@ import "dotenv-safe/config";
 import Koa, { Context } from "koa";
 import logger from "koa-logger";
 import bodyParser from "koa-bodyparser";
-import { ApolloServer } from "apollo-server-koa";
+import { ApolloServer, ApolloError, toApolloError } from "apollo-server-koa";
 import { createConnection } from "typeorm";
 import { buildSchema } from "type-graphql";
 import { UserResolver } from "./resolver/UserResolver";
+import { v4 } from "uuid";
+import routes from "./routes";
+import { GraphQLError } from "graphql";
 
 (async () => {
   await createConnection();
@@ -15,12 +18,22 @@ import { UserResolver } from "./resolver/UserResolver";
 
   app.use(logger());
   app.use(bodyParser());
+  app.use(routes.routes()).use(routes.allowedMethods());
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [UserResolver],
     }),
     context: ({ ctx }: { ctx: Context }) => ctx,
+    formatError: (error) => {
+      if (error.originalError instanceof ApolloError) {
+        return error;
+      }
+      const errorId = v4();
+      console.log("errorId: ", errorId);
+      console.log(error);
+      return new GraphQLError(`Internal Error: ${errorId}`);
+    },
   });
 
   apolloServer.applyMiddleware({ app, cors: false });
@@ -28,4 +41,4 @@ import { UserResolver } from "./resolver/UserResolver";
   app.listen({ port: process.env.PORT }, () =>
     console.log(`server is running on PORT:${process.env.PORT}`)
   );
-})().catch((error) => console.log(error));
+})().catch((e) => console.log(e));

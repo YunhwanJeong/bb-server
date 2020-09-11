@@ -15,9 +15,10 @@ import {
   createAccessToken,
   createRefreshToken,
   setRefreshTokenIntoCookie,
-} from "../lib/token";
-import { authorize } from "../middleware/auth";
+} from "../util/token";
+import { authorize } from "../middleware/local/auth";
 import { MyState } from "../types";
+import { AuthenticationError } from "apollo-server-koa";
 
 @ObjectType()
 class LoginResponse {
@@ -37,17 +38,12 @@ export class UserResolver {
     @Arg("email") email: string,
     @Arg("password") password: string
   ) {
-    try {
-      const hashedPassword = await bcrypt.hash(password, 12);
-      await User.insert({
-        username,
-        email,
-        password: hashedPassword,
-      });
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
+    const hashedPassword = await bcrypt.hash(password, 12);
+    await User.insert({
+      username,
+      email,
+      password: hashedPassword,
+    });
     return true;
   }
   @Mutation(() => LoginResponse)
@@ -58,18 +54,17 @@ export class UserResolver {
     ctx: Context
   ): Promise<LoginResponse> {
     const user = await User.findOne({ where: { email: inputEmail } });
-
     if (!user) {
-      throw new Error("가입되지 않은 이메일입니다.");
+      throw new AuthenticationError("not registered email");
     }
-
     const isPasswordCorrect = await bcrypt.compare(
       inputPassword,
       user.password
     );
     if (!isPasswordCorrect) {
-      throw new Error("잘못된 비밀번호입니다.");
+      throw new AuthenticationError("incorrect password");
     }
+
     const refreshToken = createRefreshToken(user);
     setRefreshTokenIntoCookie(ctx, refreshToken);
     return {

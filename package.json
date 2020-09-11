@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/YunhwanJung/int-server#readme",
   "dependencies": {
+    "@koa/router": "^9.4.0",
     "apollo-server-koa": "^2.17.0",
     "bcrypt": "^5.0.0",
     "class-validator": "^0.12.2",
@@ -30,7 +31,8 @@
     "mysql2": "^2.1.0",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.0.0",
-    "typeorm": "^0.2.25"
+    "typeorm": "^0.2.25",
+    "uuid": "^8.3.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
@@ -38,7 +40,9 @@
     "@types/koa": "^2.11.4",
     "@types/koa-bodyparser": "^4.3.0",
     "@types/koa-logger": "^3.1.1",
+    "@types/koa__router": "^8.0.2",
     "@types/node": "^14.6.4",
+    "@types/uuid": "^8.3.0",
     "gen-env-types": "^1.0.3",
     "nodemon": "^2.0.4",
     "ts-node": "^9.0.0",
