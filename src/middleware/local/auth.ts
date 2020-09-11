@@ -1,7 +1,8 @@
 import { MiddlewareFn } from "type-graphql";
 import { ParameterizedContext } from "koa";
-import { verifyAccessToken } from "../lib/token";
-import { MyState } from "../types";
+import { verifyAccessToken } from "../../util/token";
+import { MyState } from "../../types";
+import { AuthenticationError } from "apollo-server-koa";
 
 export const authorize: MiddlewareFn<ParameterizedContext<MyState>> = async (
   { context },
@@ -13,15 +14,15 @@ export const authorize: MiddlewareFn<ParameterizedContext<MyState>> = async (
     },
   } = context;
   if (!authorization) {
-    throw new Error("not authenticated");
+    throw new AuthenticationError("not authenticated");
   }
   const accessToken = authorization.split(" ")[1];
   try {
     const decoded: any = verifyAccessToken(accessToken);
     context.state.user = decoded;
-  } catch (error) {
-    console.log(error);
-    throw new Error("not authenticated");
+  } catch (e) {
+    console.log(e);
+    throw new AuthenticationError("invalid Token");
   }
   await next();
 };

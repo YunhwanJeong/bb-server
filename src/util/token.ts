@@ -26,3 +26,7 @@ export const setRefreshTokenIntoCookie = (
 export const verifyAccessToken = (accessToken: string) => {
   return jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!);
 };
+
+export const verifyRefreshToken = (refreshToken: string) => {
+  return jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!);
+};
