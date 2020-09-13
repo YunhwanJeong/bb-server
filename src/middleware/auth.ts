@@ -1,7 +1,7 @@
 import { MiddlewareFn } from "type-graphql";
 import { ParameterizedContext } from "koa";
-import { verifyAccessToken } from "../../util/token";
-import { MyState } from "../../types";
+import { verifyAccessToken } from "../util/token";
+import { MyState } from "../types";
 import { AuthenticationError } from "apollo-server-koa";
 
 export const authorize: MiddlewareFn<ParameterizedContext<MyState>> = async (
