@@ -3,7 +3,7 @@ import "dotenv-safe/config";
 import Koa, { Context } from "koa";
 import logger from "koa-logger";
 import bodyParser from "koa-bodyparser";
-import { ApolloServer, ApolloError, toApolloError } from "apollo-server-koa";
+import { ApolloServer, ApolloError } from "apollo-server-koa";
 import { createConnection } from "typeorm";
 import { buildSchema } from "type-graphql";
 import { UserResolver } from "./resolver/UserResolver";
