@@ -1,5 +1,3 @@
-import { ExtendableContext } from "koa";
-
 export type DecodedAccessToken = {
   id: number;
   iat: number;
@@ -8,4 +6,8 @@ export type DecodedAccessToken = {
 
 export type MyState = {
   user?: DecodedAccessToken;
+};
+
+export type MyContext = {
+  error?: (status: number, message: string) => Promise<void>;
 };

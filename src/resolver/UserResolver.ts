@@ -16,7 +16,7 @@ import {
   createRefreshToken,
   setRefreshTokenIntoCookie,
 } from "../util/token";
-import { authorize } from "../middleware/local/auth";
+import { authorize } from "../middleware/auth";
 import { MyState } from "../types";
 import { AuthenticationError } from "apollo-server-koa";
 
