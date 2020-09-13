@@ -18,8 +18,8 @@ export const authorize: MiddlewareFn<ParameterizedContext<MyState>> = async (
   }
   const accessToken = authorization.split(" ")[1];
   try {
-    const decoded: any = verifyAccessToken(accessToken);
-    context.state.user = decoded;
+    const decodedPayload: any = verifyAccessToken(accessToken);
+    context.state.user = decodedPayload;
   } catch (e) {
     console.log(e);
     throw new AuthenticationError("invalid Token");
