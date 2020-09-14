@@ -13,7 +13,7 @@ auth.post("/refresh-token", async (ctx) => {
   const refreshToken = ctx.cookies.get("jid");
   if (!refreshToken) {
     ctx.status = 401;
-    ctx.body = { message: "TOKEN_NOT_EXIST", accessToken: "" };
+    ctx.body = { ok: false, code: "TOKEN_NOT_EXIST", accessToken: "" };
     return;
   }
 
@@ -23,25 +23,26 @@ auth.post("/refresh-token", async (ctx) => {
   } catch (e) {
     console.log(e);
     ctx.status = 401;
-    ctx.body = { message: "INVALID_TOKEN", accessToken: "" };
+    ctx.body = { ok: false, code: "INVALID_TOKEN", accessToken: "" };
     return;
   }
 
   const user = await User.findOne(decodedPayload.id);
   if (!user) {
     ctx.status = 404;
-    ctx.body = { message: "USER_NOT_EXIST", accessToken: "" };
+    ctx.body = { ok: false, code: "USER_NOT_EXIST", accessToken: "" };
     return;
   }
 
   if (decodedPayload.tokenVersion !== user.tokenVersion) {
     ctx.status = 401;
-    ctx.body = { message: "TOKEN_REVOKED", accessToken: "" };
+    ctx.body = { ok: false, code: "TOKEN_REVOKED", accessToken: "" };
     return;
   }
 
   setRefreshTokenIntoCookie(ctx, createRefreshToken(user));
-  return {
+  ctx.body = {
+    ok: true,
     accessToken: createAccessToken(user),
   };
 });
