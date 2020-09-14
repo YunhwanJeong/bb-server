@@ -7,6 +7,7 @@ import {
   Field,
   Ctx,
   UseMiddleware,
+  Int,
 } from "type-graphql";
 import { User } from "../entity/User";
 import bcrypt from "bcrypt";
@@ -19,6 +20,7 @@ import {
 import { authorize } from "../middleware/auth";
 import { MyState } from "../types";
 import { AuthenticationError } from "apollo-server-koa";
+import { getConnection } from "typeorm";
 
 @ObjectType()
 class LoginResponse {
@@ -31,6 +33,11 @@ export class UserResolver {
   @Query(() => [User])
   async users() {
     return await User.find();
+  }
+  @Query(() => User, { nullable: true })
+  @UseMiddleware(authorize)
+  async me(@Ctx() ctx: ParameterizedContext<MyState>) {
+    return await User.findOne(ctx.state.user!.id);
   }
   @Mutation(() => Boolean)
   async registerUser(
@@ -65,15 +72,16 @@ export class UserResolver {
       throw new AuthenticationError("incorrect password");
     }
 
-    const refreshToken = createRefreshToken(user);
-    setRefreshTokenIntoCookie(ctx, refreshToken);
+    setRefreshTokenIntoCookie(ctx, createRefreshToken(user));
     return {
       accessToken: createAccessToken(user),
     };
   }
-  @Query(() => User, { nullable: true })
-  @UseMiddleware(authorize)
-  async me(@Ctx() ctx: ParameterizedContext<MyState>) {
-    return await User.findOne(ctx.state.user!.id);
+  @Mutation(() => Boolean)
+  async revokeRefreshToken(@Arg("userId", () => Int) userId: number) {
+    await getConnection()
+      .getRepository(User)
+      .increment({ id: userId }, "tokenVersion", 1);
+    return true;
   }
 }
