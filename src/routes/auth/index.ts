@@ -1,5 +1,10 @@
 import Router from "@koa/router";
-import { createAccessToken, verifyRefreshToken } from "../../util/token";
+import {
+  createAccessToken,
+  createRefreshToken,
+  setRefreshTokenIntoCookie,
+  verifyRefreshToken,
+} from "../../util/token";
 import { User } from "../../entity/User";
 
 const auth = new Router();
@@ -29,6 +34,13 @@ auth.post("/refresh-token", async (ctx) => {
     return;
   }
 
+  if (decodedPayload.tokenVersion !== user.tokenVersion) {
+    ctx.status = 401;
+    ctx.body = { message: "TOKEN_REVOKED", accessToken: "" };
+    return;
+  }
+
+  setRefreshTokenIntoCookie(ctx, createRefreshToken(user));
   return {
     accessToken: createAccessToken(user),
   };
