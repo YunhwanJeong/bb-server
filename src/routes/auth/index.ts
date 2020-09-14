@@ -1,5 +1,5 @@
 import Router from "@koa/router";
-import { verifyRefreshToken } from "../../util/token";
+import { createAccessToken, verifyRefreshToken } from "../../util/token";
 import { User } from "../../entity/User";
 
 const auth = new Router();
@@ -28,6 +28,10 @@ auth.post("/refresh-token", async (ctx) => {
     ctx.body = { message: "USER_NOT_EXIST", accessToken: "" };
     return;
   }
+
+  return {
+    accessToken: createAccessToken(user),
+  };
 });
 
 export default auth;
