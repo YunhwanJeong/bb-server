@@ -78,7 +78,7 @@ export class UserResolver {
     };
   }
   @Mutation(() => Boolean)
-  async revokeRefreshToken(@Arg("userId", () => Int) userId: number) {
+  async revokeToken(@Arg("userId", () => Int) userId: number) {
     await getConnection()
       .getRepository(User)
       .increment({ id: userId }, "tokenVersion", 1);
