@@ -1,3 +1,3 @@
 # bb-server
 
-Buzzer Beater project api server
+Backend source code of Buzzer Beater project
