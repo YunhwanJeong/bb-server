@@ -1,2 +1,3 @@
-# int-server
-Int project api server
+# bb-server
+
+Buzzer Beater project api server
