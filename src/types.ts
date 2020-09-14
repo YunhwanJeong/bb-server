@@ -1,5 +1,6 @@
 export type DecodedAccessToken = {
   id: number;
+  tokenVersion: number;
   iat: number;
   exp: number;
 };
