@@ -4,3 +4,6 @@ node_modules
 # Environment Variables
 env.d.ts
 .env*
+
+# VSCode
+.vscode
