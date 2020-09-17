@@ -2,21 +2,22 @@ import "reflect-metadata";
 import "dotenv-safe/config";
 import Koa, { Context } from "koa";
 import logger from "koa-logger";
+import cors from "./middlewares/cors";
 import bodyParser from "koa-bodyparser";
 import { ApolloServer, ApolloError } from "apollo-server-koa";
 import { createConnection } from "typeorm";
 import { buildSchema } from "type-graphql";
-import { UserResolver } from "./resolver/UserResolver";
+import { UserResolver } from "./resolvers/UserResolver";
 import { v4 } from "uuid";
 import routes from "./routes";
 import { GraphQLError } from "graphql";
 
 (async () => {
   await createConnection();
-
   const app = new Koa();
 
   app.use(logger());
+  app.use(cors);
   app.use(bodyParser());
   app.use(routes.routes()).use(routes.allowedMethods());
 
