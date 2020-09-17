@@ -1,6 +1,6 @@
 import { MiddlewareFn } from "type-graphql";
 import { ParameterizedContext } from "koa";
-import { verifyAccessToken } from "../util/token";
+import { verifyAccessToken } from "../utils/token";
 import { MyState } from "../types";
 import { AuthenticationError } from "apollo-server-koa";
 

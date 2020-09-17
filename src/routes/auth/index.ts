@@ -4,8 +4,8 @@ import {
   createRefreshToken,
   setRefreshTokenIntoCookie,
   verifyRefreshToken,
-} from "../../util/token";
-import { User } from "../../entity/User";
+} from "../../utils/token";
+import { User } from "../../entities/User";
 
 const auth = new Router();
 

@@ -9,15 +9,15 @@ import {
   UseMiddleware,
   Int,
 } from "type-graphql";
-import { User } from "../entity/User";
+import { User } from "../entities/User";
 import bcrypt from "bcrypt";
 import { Context, ParameterizedContext } from "koa";
 import {
   createAccessToken,
   createRefreshToken,
   setRefreshTokenIntoCookie,
-} from "../util/token";
-import { authorize } from "../middleware/auth";
+} from "../utils/token";
+import { authorize } from "../middlewares/auth";
 import { MyState } from "../types";
 import { AuthenticationError } from "apollo-server-koa";
 import { getConnection } from "typeorm";
