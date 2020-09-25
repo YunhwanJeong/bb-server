@@ -18,7 +18,7 @@ export const setRefreshTokenIntoCookie = (
   ctx: Context,
   refreshToken: string
 ) => {
-  return ctx.cookies.set("jid", refreshToken, {
+  return ctx.cookies.set("dami", refreshToken, {
     httpOnly: true,
     maxAge: 60 * 60 * 24 * 7 * 1000,
   });

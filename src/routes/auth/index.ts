@@ -10,7 +10,7 @@ import { User } from "../../entities/User";
 const auth = new Router();
 
 auth.post("/refresh-token", async (ctx) => {
-  const refreshToken = ctx.cookies.get("jid");
+  const refreshToken = ctx.cookies.get("dami");
   if (!refreshToken) {
     ctx.status = 401;
     ctx.body = { ok: false, code: "TOKEN_NOT_EXIST", accessToken: "" };
