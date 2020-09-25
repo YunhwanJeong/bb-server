@@ -26,6 +26,8 @@ import { getConnection } from "typeorm";
 class LoginResponse {
   @Field()
   accessToken!: string;
+  @Field(() => User)
+  user!: User;
 }
 
 @Resolver()
@@ -40,7 +42,7 @@ export class UserResolver {
     return await User.findOne(ctx.state.user!.id);
   }
   @Mutation(() => Boolean)
-  async registerUser(
+  async register(
     @Arg("username") username: string,
     @Arg("email") email: string,
     @Arg("password") password: string
@@ -75,6 +77,7 @@ export class UserResolver {
     setRefreshTokenIntoCookie(ctx, createRefreshToken(user));
     return {
       accessToken: createAccessToken(user),
+      user,
     };
   }
   @Mutation(() => Boolean)
