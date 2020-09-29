@@ -19,7 +19,7 @@ import {
 } from "../utils/token";
 import { authorize } from "../middlewares/auth";
 import { MyState } from "../types";
-import { AuthenticationError } from "apollo-server-koa";
+import { AuthenticationError, UserInputError } from "apollo-server-koa";
 import { getConnection } from "typeorm";
 
 @ObjectType()
@@ -48,11 +48,17 @@ export class UserResolver {
     @Arg("password") password: string
   ) {
     const hashedPassword = await bcrypt.hash(password, 12);
-    await User.insert({
-      username,
-      email,
-      password: hashedPassword,
-    });
+    try {
+      await User.insert({
+        username,
+        email,
+        password: hashedPassword,
+      });
+    } catch (e) {
+      if (e.code === "ER_DUP_ENTRY") {
+        throw new UserInputError("already registered email");
+      }
+    }
     return true;
   }
   @Mutation(() => LoginResponse)
