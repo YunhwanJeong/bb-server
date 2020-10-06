@@ -24,6 +24,10 @@ export const setRefreshTokenIntoCookie = (
   });
 };
 
+export const deleteCookie = (ctx: Context) => {
+  return ctx.cookies.set("dami");
+};
+
 export const verifyAccessToken = (accessToken: string) => {
   return jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!);
 };

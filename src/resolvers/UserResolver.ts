@@ -15,6 +15,7 @@ import { Context, ParameterizedContext } from "koa";
 import {
   createAccessToken,
   createRefreshToken,
+  deleteCookie,
   setRefreshTokenIntoCookie,
 } from "../utils/token";
 import { authorize } from "../middlewares/auth";
@@ -87,10 +88,14 @@ export class UserResolver {
     };
   }
   @Mutation(() => Boolean)
-  async revokeToken(@Arg("userId", () => Int) userId: number) {
+  async revokeToken(
+    @Ctx() ctx: Context,
+    @Arg("userId", () => Int) userId: number
+  ) {
     await getConnection()
       .getRepository(User)
       .increment({ id: userId }, "tokenVersion", 1);
+    deleteCookie(ctx);
     return true;
   }
 }
