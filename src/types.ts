@@ -6,5 +6,5 @@ export type DecodedAccessToken = {
 };
 
 export type MyState = {
-  user?: DecodedAccessToken;
+  member?: DecodedAccessToken;
 };

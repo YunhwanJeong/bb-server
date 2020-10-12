@@ -7,7 +7,7 @@ import bodyParser from "koa-bodyparser";
 import { ApolloServer, ApolloError } from "apollo-server-koa";
 import { createConnection } from "typeorm";
 import { buildSchema } from "type-graphql";
-import { UserResolver } from "./resolvers/UserResolver";
+import { MemberResolver } from "./resolvers/MemberResolver";
 import { v4 } from "uuid";
 import routes from "./routes";
 import { GraphQLError } from "graphql";
@@ -23,7 +23,7 @@ import { GraphQLError } from "graphql";
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver],
+      resolvers: [MemberResolver],
     }),
     context: ({ ctx }: { ctx: Context }) => ctx,
     formatError: (error) => {

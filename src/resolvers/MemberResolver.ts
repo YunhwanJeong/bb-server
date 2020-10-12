@@ -7,9 +7,8 @@ import {
   Field,
   Ctx,
   UseMiddleware,
-  Int,
 } from "type-graphql";
-import { User } from "../entities/User";
+import { Member } from "../entities/Member";
 import bcrypt from "bcrypt";
 import { Context, ParameterizedContext } from "koa";
 import {
@@ -27,20 +26,20 @@ import { getConnection } from "typeorm";
 class LoginResponse {
   @Field()
   accessToken!: string;
-  @Field(() => User)
-  user!: User;
+  @Field(() => Member)
+  member!: Member;
 }
 
 @Resolver()
-export class UserResolver {
-  @Query(() => [User])
-  async users() {
-    return await User.find();
+export class MemberResolver {
+  @Query(() => [Member])
+  async members() {
+    return await Member.find();
   }
-  @Query(() => User, { nullable: true })
+  @Query(() => Member, { nullable: true })
   @UseMiddleware(authorize)
   async me(@Ctx() ctx: ParameterizedContext<MyState>) {
-    return await User.findOne(ctx.state.user!.id);
+    return await Member.findOne(ctx.state.member!.id);
   }
   @Mutation(() => Boolean)
   async register(
@@ -50,7 +49,7 @@ export class UserResolver {
   ) {
     const hashedPassword = await bcrypt.hash(password, 12);
     try {
-      await User.insert({
+      await Member.insert({
         username,
         email,
         password: hashedPassword,
@@ -69,32 +68,29 @@ export class UserResolver {
     @Ctx()
     ctx: Context
   ): Promise<LoginResponse> {
-    const user = await User.findOne({ where: { email: inputEmail } });
-    if (!user) {
+    const member = await Member.findOne({ where: { email: inputEmail } });
+    if (!member) {
       throw new AuthenticationError("not registered email");
     }
     const isPasswordCorrect = await bcrypt.compare(
       inputPassword,
-      user.password
+      member.password
     );
     if (!isPasswordCorrect) {
       throw new AuthenticationError("incorrect password");
     }
 
-    setRefreshTokenIntoCookie(ctx, createRefreshToken(user));
+    setRefreshTokenIntoCookie(ctx, createRefreshToken(member));
     return {
-      accessToken: createAccessToken(user),
-      user,
+      accessToken: createAccessToken(member),
+      member,
     };
   }
   @Mutation(() => Boolean)
-  async revokeToken(
-    @Ctx() ctx: Context,
-    @Arg("userId", () => Int) userId: number
-  ) {
+  async revokeToken(@Ctx() ctx: Context, @Arg("memberId") memberId: string) {
     await getConnection()
-      .getRepository(User)
-      .increment({ id: userId }, "tokenVersion", 1);
+      .getRepository(Member)
+      .increment({ id: memberId }, "token_version", 1);
     deleteCookie(ctx);
     return true;
   }

@@ -1,15 +1,15 @@
-import { User } from "../entities/User";
+import { Member } from "../entities/Member";
 import jwt from "jsonwebtoken";
 import { Context } from "koa";
 
-export const createAccessToken = ({ id }: User) => {
+export const createAccessToken = ({ id }: Member) => {
   return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET!, {
     expiresIn: "15m",
   });
 };
 
-export const createRefreshToken = ({ id, tokenVersion }: User) => {
-  return jwt.sign({ id, tokenVersion }, process.env.REFRESH_TOKEN_SECRET!, {
+export const createRefreshToken = ({ id, token_version }: Member) => {
+  return jwt.sign({ id, token_version }, process.env.REFRESH_TOKEN_SECRET!, {
     expiresIn: "7d",
   });
 };

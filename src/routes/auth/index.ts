@@ -5,7 +5,7 @@ import {
   setRefreshTokenIntoCookie,
   verifyRefreshToken,
 } from "../../utils/token";
-import { User } from "../../entities/User";
+import { Member } from "../../entities/Member";
 
 const auth = new Router();
 
@@ -27,23 +27,23 @@ auth.post("/refresh-token", async (ctx) => {
     return;
   }
 
-  const user = await User.findOne(decodedPayload.id);
-  if (!user) {
+  const member = await Member.findOne(decodedPayload.id);
+  if (!member) {
     ctx.status = 404;
-    ctx.body = { ok: false, code: "USER_NOT_EXIST", accessToken: "" };
+    ctx.body = { ok: false, code: "MEMBER_NOT_EXIST", accessToken: "" };
     return;
   }
 
-  if (decodedPayload.tokenVersion !== user.tokenVersion) {
+  if (decodedPayload.token_version !== member.token_version) {
     ctx.status = 401;
     ctx.body = { ok: false, code: "TOKEN_REVOKED", accessToken: "" };
     return;
   }
 
-  setRefreshTokenIntoCookie(ctx, createRefreshToken(user));
+  setRefreshTokenIntoCookie(ctx, createRefreshToken(member));
   ctx.body = {
     ok: true,
-    accessToken: createAccessToken(user),
+    accessToken: createAccessToken(member),
   };
 });
 
