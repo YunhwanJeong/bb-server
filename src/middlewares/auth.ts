@@ -13,9 +13,7 @@ export const authorize: MiddlewareFn<ParameterizedContext<MyState>> = async (
       header: { authorization },
     },
   } = context;
-  if (!authorization) {
-    throw new AuthenticationError("not authenticated");
-  }
+  if (!authorization) throw new AuthenticationError("not authenticated");
   const accessToken = authorization.split(" ")[1];
   try {
     const decodedPayload: any = verifyAccessToken(accessToken);
