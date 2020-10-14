@@ -34,6 +34,7 @@ export class Member extends BaseEntity {
   @Field()
   @UpdateDateColumn({ type: "timestamp" })
   updated_at!: Date;
+  @Field(() => MemberProfile, { nullable: true })
   @OneToOne((type) => MemberProfile, (profile) => profile.member)
   profile!: MemberProfile;
 }

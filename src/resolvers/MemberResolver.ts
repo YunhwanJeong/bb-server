@@ -20,7 +20,6 @@ import {
 import { authorize } from "../middlewares/auth";
 import { MyState } from "../types";
 import { AuthenticationError, UserInputError } from "apollo-server-koa";
-import { getConnection } from "typeorm";
 import { MemberProfile } from "../entities/MemberProfile";
 
 @ObjectType()
@@ -33,14 +32,20 @@ class LoginResponse {
 
 @Resolver()
 export class MemberResolver {
-  @Query(() => [Member])
-  async members() {
-    return await Member.find();
-  }
   @Query(() => Member, { nullable: true })
   @UseMiddleware(authorize)
   async me(@Ctx() ctx: ParameterizedContext<MyState>) {
-    return await Member.findOne(ctx.state.member!.id);
+    const member = await Member.createQueryBuilder("member")
+      .select([
+        "member.id",
+        "member.email",
+        "member.username",
+        "profile.avatar_url",
+      ])
+      .leftJoin("member.profile", "profile")
+      .where({ id: ctx.state.member!.id })
+      .getOne();
+    return member;
   }
   @Mutation(() => Boolean)
   async register(
@@ -90,9 +95,11 @@ export class MemberResolver {
   }
   @Mutation(() => Boolean)
   async revokeToken(@Ctx() ctx: Context, @Arg("memberId") memberId: string) {
-    await getConnection()
-      .getRepository(Member)
-      .increment({ id: memberId }, "token_version", 1);
+    await Member.getRepository().increment(
+      { id: memberId },
+      "token_version",
+      1
+    );
     deleteCookie(ctx);
     return true;
   }
