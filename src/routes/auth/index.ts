@@ -6,6 +6,7 @@ import {
   verifyRefreshToken,
 } from "../../utils/token";
 import { Member } from "../../entities/Member";
+import { authorize } from "../../middlewares/api/auth";
 
 const auth = new Router();
 
@@ -45,6 +46,21 @@ auth.post("/refresh-token", async (ctx) => {
     ok: true,
     accessToken: createAccessToken(member),
   };
+});
+
+auth.get("/me", authorize, async (ctx) => {
+  const member = await Member.createQueryBuilder("member")
+    .select([
+      "member.id",
+      "member.email",
+      "member.username",
+      "profile.avatar_url",
+    ])
+    .leftJoin("member.profile", "profile")
+    .where({ id: ctx.state.member!.id })
+    .getOne();
+  ctx.status = 200;
+  ctx.body = member;
 });
 
 export default auth;
