@@ -6,19 +6,16 @@ import {
   ObjectType,
   Field,
   Ctx,
-  UseMiddleware,
 } from "type-graphql";
 import { Member } from "../entities/Member";
 import bcrypt from "bcrypt";
-import { Context, ParameterizedContext } from "koa";
+import { Context } from "koa";
 import {
   createAccessToken,
   createRefreshToken,
   deleteCookie,
   setRefreshTokenIntoCookie,
 } from "../utils/token";
-import { authorize } from "../middlewares/auth";
-import { MyState } from "../types";
 import { AuthenticationError, UserInputError } from "apollo-server-koa";
 import { MemberProfile } from "../entities/MemberProfile";
 
@@ -29,23 +26,11 @@ class LoginResponse {
   @Field(() => Member)
   member!: Member;
 }
-
 @Resolver()
 export class MemberResolver {
-  @Query(() => Member, { nullable: true })
-  @UseMiddleware(authorize)
-  async me(@Ctx() ctx: ParameterizedContext<MyState>) {
-    const member = await Member.createQueryBuilder("member")
-      .select([
-        "member.id",
-        "member.email",
-        "member.username",
-        "profile.avatar_url",
-      ])
-      .leftJoin("member.profile", "profile")
-      .where({ id: ctx.state.member!.id })
-      .getOne();
-    return member;
+  @Query(() => Boolean)
+  async test() {
+    return true;
   }
   @Mutation(() => Boolean)
   async register(
@@ -79,7 +64,18 @@ export class MemberResolver {
     @Ctx()
     ctx: Context
   ): Promise<LoginResponse> {
-    const member = await Member.findOne({ where: { email: inputEmail } });
+    const member = await Member.createQueryBuilder("member")
+      .select([
+        "member.id",
+        "member.email",
+        "member.username",
+        "member.password",
+        "member.token_version",
+        "profile.avatar_url",
+      ])
+      .leftJoin("member.profile", "profile")
+      .where({ email: inputEmail })
+      .getOne();
     if (!member) throw new AuthenticationError("not registered email");
     const isPasswordCorrect = await bcrypt.compare(
       inputPassword,
